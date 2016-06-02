@@ -101,9 +101,20 @@ prompt_git() {
   fi
 }
 
+prompt_agnoster_pwd() {
+  local pwd="${PWD/#$HOME/~}"
+
+  if [[ "$pwd" == (#m)[/~] ]]; then
+    _prompt_agnoster_pwd="$MATCH"
+    unset MATCH
+  else
+    _prompt_agnoster_pwd="${${${${(@j:/:M)${(@s:/:)pwd}##.#?}:h}%/}//\%/%%}/${${pwd:t}//\%/%%}"
+  fi
+}
+
 # Dir: current working directory
 prompt_dir() {
-  prompt_segment blue $PRIMARY_FG ' %~ '
+  prompt_segment blue $PRIMARY_FG " ${_prompt_agnoster_pwd} "
 }
 
 # Status:
@@ -132,6 +143,7 @@ prompt_agnoster_main() {
 }
 
 prompt_agnoster_precmd() {
+  prompt_agnoster_pwd
   vcs_info
   PROMPT='%{%f%b%k%}$(prompt_agnoster_main) '
 }
